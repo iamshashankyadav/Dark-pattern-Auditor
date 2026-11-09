@@ -83,7 +83,7 @@ def audit_many(texts: list[str], use_semantic: bool = True) -> list[AuditResult]
         if flagged:
             flagged.sort(key=lambda k: -ds.scores[k])
             result = AuditResult(text, FLAGGED, 3, h.reason, scores, _build_flags(text, flagged, ds))
-        elif top_score >= settings.review_threshold:
+        elif top_score >= settings.review_threshold or ds.scores["safe"] < settings.review_threshold:
             result = AuditResult(text, NEEDS_REVIEW, 2, h.reason, scores, review_category=top_key)
         else:
             result = AuditResult(text, PASSED, 2, h.reason, scores)
