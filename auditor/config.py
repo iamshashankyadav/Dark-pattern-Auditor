@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     # Phase 2 routing: violations at or above this confidence are flagged,
     # anything less certain goes to the human evaluation queue.
     flag_threshold: float = 0.70
+    # Violations scoring between review_threshold and flag_threshold are uncertain and
+    # are sent to human reviewers; their decisions feed SetFit retraining.
+    review_threshold: float = 0.50
     # Phase 1: cosine similarity to the risk-phrase bank that marks text as suspicious.
     semantic_threshold: float = 0.55
 
