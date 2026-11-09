@@ -6,7 +6,6 @@ setfit>=1.1
 datasets>=2.19
 accelerate>=0.30
 scikit-learn>=1.4
-seqeval>=1.2
 
 # Service layer
 fastapi>=0.110

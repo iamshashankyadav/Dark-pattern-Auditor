@@ -17,6 +17,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from auditor.config import PROJECT_ROOT, get_settings  # noqa: E402
+from auditor.metrics import entity_prf, format_report  # noqa: E402
 from auditor.spans import char_spans_to_token_labels, parse_markup  # noqa: E402
 from auditor.taxonomy import SPAN_LABELS  # noqa: E402
 
@@ -55,7 +56,6 @@ def main():
     args = parser.parse_args()
 
     from datasets import Dataset
-    from seqeval.metrics import classification_report, f1_score
     from transformers import (
         AutoModelForTokenClassification,
         AutoTokenizer,
@@ -90,7 +90,7 @@ def main():
 
     def compute_metrics(eval_pred):
         true_tags, pred_tags = to_tags(*eval_pred)
-        return {"f1": f1_score(true_tags, pred_tags)}
+        return {"f1": entity_prf(true_tags, pred_tags)["micro"]["f1"]}
 
     trainer = Trainer(
         model=model,
@@ -118,7 +118,7 @@ def main():
     for split in ("dev", "test"):
         out = trainer.predict(datasets[split])
         true_tags, pred_tags = to_tags(out.predictions, out.label_ids)
-        report = classification_report(true_tags, pred_tags, digits=3)
+        report = format_report(entity_prf(true_tags, pred_tags))
         report_lines.append(f"== {split} ==\n{report}")
         print(f"\n== {split} ==\n{report}")
 
