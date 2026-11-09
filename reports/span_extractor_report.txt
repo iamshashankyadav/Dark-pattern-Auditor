@@ -1,0 +1,24 @@
+== dev (strict) ==
+type       precision    recall        f1  support
+micro          1.000     1.000     1.000      451
+CLAIM          1.000     1.000     1.000      140
+PRICING        1.000     1.000     1.000      125
+URGENCY        1.000     1.000     1.000      186
+== dev (lenient) ==
+type       precision    recall        f1  support
+micro          1.000     1.000     1.000      451
+CLAIM          1.000     1.000     1.000      140
+PRICING        1.000     1.000     1.000      125
+URGENCY        1.000     1.000     1.000      186
+== test (strict) ==
+type       precision    recall        f1  support
+micro          0.378     0.519     0.438       27
+CLAIM          0.500     0.556     0.526        9
+PRICING        0.231     0.333     0.273        9
+URGENCY        0.429     0.667     0.522        9
+== test (lenient) ==
+type       precision    recall        f1  support
+micro          0.811     1.000     0.896       27
+CLAIM          1.000     1.000     1.000        9
+PRICING        0.846     1.000     0.917        9
+URGENCY        0.643     1.000     0.783        9

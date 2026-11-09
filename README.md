@@ -118,4 +118,47 @@ pytest -q
 
 ## Results
 
-<!-- results -->
+Hardware: single consumer GPU (CUDA). Full reports are in [reports/](reports/).
+
+**Phase 2: document classification**, on the held-out `data/test_set.csv` (40 hand-written
+examples, 10 per class, with no overlap with the 80-example training corpus):
+
+| System | Accuracy | Macro-F1 |
+|---|---|---|
+| Regex lexicon baseline | 0.900 | 0.902 |
+| Zero-shot `bart-large-mnli` (no training) | 0.700 | 0.664 |
+| **SetFit** (`paraphrase-mpnet-base-v2`, 20 examples/class) | **0.950** | **0.950** |
+
+**Full tiered pipeline** (Phase 1 → 2 → 3 with routing): 39 of 40 items are decided
+automatically at **97.4 % accuracy** and 1 ambiguous item goes to human review. 7 of the 10
+safe items exit at Phase 1, so they never reach a transformer.
+
+**Phase 3: span extraction**, on the hand-annotated `data/span_test.txt` (30 documents,
+27 gold spans):
+
+| Extractor | Strict F1 | Lenient (overlap) F1 |
+|---|---|---|
+| Regex lexicon | 0.091 | 0.906 |
+| **DistilBERT token classifier** | **0.414** | **0.915** |
+
+Strict F1 requires exact phrase boundaries. Lenient F1 counts any same-type overlap, which is
+what matters for highlighting. The token classifier finds every claim and urgency phrase in the
+test set (recall 1.0). Most remaining strict errors are boundary disagreements, such as
+"timer says 4 minutes left" vs the gold "the timer says 4 minutes left".
+
+### Observations and limitations
+
+* **Zero-shot NLI struggles with health/eco claims** (recall 0.10). The NLI model reads
+  "cures migraines" as a plausible product description rather than an *unproven* claim. A
+  few labelled examples (SetFit) fix this, which is the motivation for Phase 2 fine-tuning.
+* **The regex baseline is optimistic.** The lexicon and the test set were written by the
+  same team, so the lexicon partly anticipates test phrasing. It also cannot localise spans
+  (strict F1 0.09).
+* **Negation is a known failure mode.** "Pay once, there are no recurring fees" is
+  classified as a subscription trap with high confidence. Reviewer feedback on such cases is
+  exactly what the retraining loop is for.
+* **The data is small and partly synthetic.** Span training data is template-generated plus
+  60 hand-annotated sentences. Dev F1 is 1.0 on synthetic data, so only the hand-written test
+  sets are meaningful.
+* **Thresholds are calibrated on training data.** The Phase 1 semantic threshold (0.30) was
+  chosen on the seed corpus (97 % violation recall), not on the test set.
