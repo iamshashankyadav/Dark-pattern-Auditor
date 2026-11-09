@@ -42,6 +42,23 @@ SAFE = [
     "Hand wash recommended to keep it like new.",
     "Batteries are included in the box.",
     "Assembly takes about {n} minutes with the included tools.",
+    # Hard negatives: honest copy that mentions prices, fees, time or health-adjacent words.
+    "Pay once and keep it, there are no recurring fees.",
+    "One-time purchase, no subscription required.",
+    "Battery lasts up to {n} hours per charge.",
+    "Delivery charges are shown before you pay.",
+    "Order before {n} pm for same-day dispatch.",
+    "Cancel anytime online from your account page in two clicks.",
+    "The monthly plan costs ${price} and you can cancel at any time.",
+    "Made with natural cotton fibres.",
+    "Contains {n}0 mg of vitamin C per serving.",
+    "Packaging is made from {n}0% recycled cardboard.",
+    "Charges in {n} hours with the included adapter.",
+    "Sale prices are valid until stock of the seasonal range is cleared.",
+    "Tested by an independent lab for lead and BPA.",
+    "Seats from ${small}0, taxes included in the displayed price.",
+    "Free shipping on orders over ${price}.",
+    "Lasts about {n} months with daily use.",
 ]
 
 URGENCY = [
@@ -131,11 +148,28 @@ def fill(template: str, rng: random.Random) -> str:
     return out
 
 
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+
+
+def load_seed_fragments() -> tuple[list[str], list[str]]:
+    """Hand-annotated seed-corpus violations and its safe sentences (real, varied wording)."""
+    import csv
+
+    bad = [l.strip() for l in (DATA_DIR / "span_seed.txt").read_text(encoding="utf-8").splitlines() if l.strip()]
+    with (DATA_DIR / "seed_corpus.csv").open(encoding="utf-8") as f:
+        safe = [row["text"] for row in csv.DictReader(f) if row["label"] == "safe"]
+    return bad, safe
+
+
+SEED_BAD, SEED_SAFE = load_seed_fragments()
+
+
 def make_document(rng: random.Random) -> dict:
-    sentences = [fill(rng.choice(SAFE), rng) for _ in range(rng.randint(1, 3))]
+    safe_pool = SAFE + SEED_SAFE
+    sentences = [fill(rng.choice(safe_pool), rng) for _ in range(rng.randint(1, 3))]
     n_bad = rng.choices([0, 1, 2, 3], weights=[0.2, 0.45, 0.25, 0.1])[0]
     for _ in range(n_bad):
-        pool = rng.choice([URGENCY, CLAIMS, PRICING])
+        pool = rng.choice([URGENCY, CLAIMS, PRICING, SEED_BAD])
         sentences.append(fill(rng.choice(pool), rng))
     rng.shuffle(sentences)
     return parse_markup(" ".join(sentences))
@@ -152,7 +186,7 @@ def main():
     parser.add_argument("--train", type=int, default=2000)
     parser.add_argument("--dev", type=int, default=300)
     parser.add_argument("--seed", type=int, default=13)
-    parser.add_argument("--out-dir", type=Path, default=Path(__file__).resolve().parent.parent / "data")
+    parser.add_argument("--out-dir", type=Path, default=DATA_DIR)
     args = parser.parse_args()
 
     rng = random.Random(args.seed)
