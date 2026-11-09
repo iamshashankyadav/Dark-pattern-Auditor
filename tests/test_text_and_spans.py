@@ -46,3 +46,22 @@ def test_bio_entities_and_prf():
     assert report["micro"]["precision"] == 1.0
     assert report["micro"]["recall"] == 0.5
     assert report["Y"]["f1"] == 0.0
+
+
+def test_lenient_matching_counts_overlap():
+    gold = [["B-X", "I-X", "I-X", "O"]]
+    pred = [["O", "B-X", "I-X", "O"]]  # shorter span, same type
+    assert entity_prf(gold, pred, "strict")["micro"]["f1"] == 0.0
+    assert entity_prf(gold, pred, "lenient")["micro"]["f1"] == 1.0
+
+
+def test_join_fragments():
+    from auditor.extractor import _join_fragments
+
+    text = "It balances hormones and prevents illness."
+    spans = [
+        {"start": 3, "end": 20, "category": "c", "score": 0.9},
+        {"start": 25, "end": 41, "category": "c", "score": 0.7},
+    ]
+    [joined] = _join_fragments(text, spans)
+    assert text[joined["start"]:joined["end"]] == "balances hormones and prevents illness"

@@ -8,6 +8,7 @@ matches. Every span is returned with character offsets so the dashboard can high
 from __future__ import annotations
 
 import logging
+import re
 from functools import lru_cache
 
 from auditor.config import get_settings
@@ -18,18 +19,24 @@ from auditor.text_utils import merge_spans
 log = logging.getLogger(__name__)
 
 
+_CONNECTOR = re.compile(r"^[\s,;:\-–]*(?:(?:and|or|but|with|while|to|&)[\s,;:\-–]*)?$", re.IGNORECASE)
+
+
 class TransformerSpanExtractor:
     name = "token_classifier"
 
-    def __init__(self, model_dir):
+    def __init__(self, model_dir, min_score: float = 0.6):
         from transformers import pipeline
 
         from auditor.classifier import _device
 
+        self.min_score = min_score
+        # "first": each word takes the label of its first sub-token, which avoids
+        # spans that start or stop in the middle of a word.
         self._pipe = pipeline(
             "token-classification",
             model=str(model_dir),
-            aggregation_strategy="simple",
+            aggregation_strategy="first",
             device=_device(),
         )
 
@@ -46,7 +53,8 @@ class TransformerSpanExtractor:
                 "score": float(ent["score"]),
                 "source": self.name,
             })
-        return _expand_to_words(text, merge_spans(spans))
+        spans = _join_fragments(text, _expand_to_words(text, merge_spans(spans)))
+        return [s for s in spans if s["score"] >= self.min_score and _has_word(text, s)]
 
 
 class RegexSpanExtractor:
@@ -59,6 +67,30 @@ class RegexSpanExtractor:
             for s, e, _ in hits
         ]
         return merge_spans(spans)
+
+
+def _join_fragments(text: str, spans: list[dict]) -> list[dict]:
+    """Join same-category spans separated only by punctuation or a connective
+    ("balances hormones and" + "prevents illness" -> one span)."""
+    joined: list[dict] = []
+    for span in sorted(spans, key=lambda s: s["start"]):
+        prev = joined[-1] if joined else None
+        if (prev and prev["category"] == span["category"]
+                and _CONNECTOR.match(text[prev["end"]:span["start"]])):
+            # length-weighted score so a short noisy fragment doesn't dominate
+            a, b = prev["end"] - prev["start"], span["end"] - span["start"]
+            prev["score"] = (prev["score"] * a + span["score"] * b) / (a + b)
+            prev["end"] = span["end"]
+        else:
+            joined.append(dict(span))
+    return joined
+
+
+def _has_word(text: str, span: dict) -> bool:
+    """Drop degenerate spans: a lone number, a single short word, or punctuation."""
+    piece = text[span["start"]:span["end"]]
+    words = re.findall(r"[A-Za-z]{3,}", piece)
+    return len(words) >= 2 or (len(words) == 1 and len(piece) >= 6)
 
 
 def _expand_to_words(text: str, spans: list[dict]) -> list[dict]:

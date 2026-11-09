@@ -118,9 +118,10 @@ def main():
     for split in ("dev", "test"):
         out = trainer.predict(datasets[split])
         true_tags, pred_tags = to_tags(out.predictions, out.label_ids)
-        report = format_report(entity_prf(true_tags, pred_tags))
-        report_lines.append(f"== {split} ==\n{report}")
-        print(f"\n== {split} ==\n{report}")
+        for mode in ("strict", "lenient"):
+            report = format_report(entity_prf(true_tags, pred_tags, mode))
+            report_lines.append(f"== {split} ({mode}) ==\n{report}")
+            print(f"\n== {split} ({mode}) ==\n{report}")
 
     args.output.mkdir(parents=True, exist_ok=True)
     trainer.save_model(str(args.output))
