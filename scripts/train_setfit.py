@@ -65,6 +65,7 @@ def main():
             num_epochs=args.epochs,
             num_iterations=args.iterations,
             seed=args.seed,
+            report_to="none",  # don't auto-enable wandb/tensorboard if installed
         ),
         train_dataset=train_ds,
     )
