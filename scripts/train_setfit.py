@@ -66,6 +66,8 @@ def main():
             num_iterations=args.iterations,
             seed=args.seed,
             report_to="none",  # don't auto-enable wandb/tensorboard if installed
+            output_dir=str(PROJECT_ROOT / "models" / "_setfit_checkpoints"),
+            save_strategy="no",
         ),
         train_dataset=train_ds,
     )
