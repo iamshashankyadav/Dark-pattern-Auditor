@@ -7,14 +7,16 @@ Evaluates entity-level precision/recall/F1 (seqeval) on the synthetic dev split 
 the hand-annotated ``data/span_test.txt``.
 """
 
-import argparse
 import json
 import sys
 from pathlib import Path
 
-import numpy as np
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import auditor  # noqa: F401, E402
+import torch  # noqa: F401, E402
+
+import argparse  # noqa: E402
+import numpy as np  # noqa: E402
 
 from auditor.config import PROJECT_ROOT, get_settings  # noqa: E402
 from auditor.metrics import entity_prf, format_report  # noqa: E402
