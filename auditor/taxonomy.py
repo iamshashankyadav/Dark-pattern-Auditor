@@ -29,6 +29,24 @@ PRICING = RiskCategory(
     span_tag="PRICING",
     hypothesis="hides a recurring subscription, automatic renewal or extra fees in the price",
 )
+SHAMING = RiskCategory(
+    key="confirm_shaming",
+    name="Confirm-shaming (Guilt-inducing Opt-outs)",
+    span_tag="SHAMING",
+    hypothesis="uses guilt, shame, or emotional manipulation to discourage opting out",
+)
+DRIP = RiskCategory(
+    key="drip_pricing",
+    name="Drip Pricing (Hidden Incremental Charges)",
+    span_tag="DRIP",
+    hypothesis="conceals mandatory fees, handling surcharges, or taxes revealed incrementally at checkout",
+)
+BAIT = RiskCategory(
+    key="bait_and_switch",
+    name="Bait and Switch (Misleading Offer or Terms)",
+    span_tag="BAIT",
+    hypothesis="advertises an attractive offer that is unavailable, restricted, or replaced with higher charges",
+)
 SAFE = RiskCategory(
     key="safe",
     name="Safe E-Commerce Copy",
@@ -36,8 +54,8 @@ SAFE = RiskCategory(
     hypothesis="is an honest, factual description of the product",
 )
 
-CATEGORIES: list[RiskCategory] = [URGENCY, CLAIMS, PRICING, SAFE]
-VIOLATIONS: list[RiskCategory] = [URGENCY, CLAIMS, PRICING]
+CATEGORIES: list[RiskCategory] = [URGENCY, CLAIMS, PRICING, SHAMING, DRIP, BAIT, SAFE]
+VIOLATIONS: list[RiskCategory] = [URGENCY, CLAIMS, PRICING, SHAMING, DRIP, BAIT]
 BY_KEY: dict[str, RiskCategory] = {c.key: c for c in CATEGORIES}
 BY_TAG: dict[str, RiskCategory] = {c.span_tag: c for c in VIOLATIONS}
 LABEL_KEYS: list[str] = [c.key for c in CATEGORIES]
