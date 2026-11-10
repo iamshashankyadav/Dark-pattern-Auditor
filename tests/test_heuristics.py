@@ -13,6 +13,9 @@ from auditor.lexicon import regex_hits
     ("100% eco-friendly packaging", "unsubstantiated_claims"),
     ("Free trial, then billed monthly until you cancel", "subscription_trap"),
     ("Price excludes mandatory service fees", "subscription_trap"),
+    ("No thanks, I hate saving money and prefer full price", "confirm_shaming"),
+    ("Mandatory internet handling fee and booking surcharge added at checkout", "drip_pricing"),
+    ("Advertised at 70% off but discount applies only if upgraded to platinum plan", "bait_and_switch"),
 ])
 def test_regex_detects_category(text, category):
     assert category in regex_hits(text)
