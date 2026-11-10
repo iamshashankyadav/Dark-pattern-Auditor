@@ -1,24 +1,32 @@
 == dev (strict) ==
 type       precision    recall        f1  support
-micro          1.000     1.000     1.000      451
-CLAIM          1.000     1.000     1.000      140
-PRICING        1.000     1.000     1.000      125
-URGENCY        1.000     1.000     1.000      186
+micro          0.253     0.160     0.196      144
+BAIT           0.000     0.000     0.000       21
+CLAIM          0.000     0.000     0.000       22
+DRIP           0.229     0.407     0.293       27
+PRICING        0.000     0.000     0.000       29
+SHAMING        0.522     0.632     0.571       19
+URGENCY        0.000     0.000     0.000       26
 == dev (lenient) ==
 type       precision    recall        f1  support
-micro          1.000     1.000     1.000      451
-CLAIM          1.000     1.000     1.000      140
-PRICING        1.000     1.000     1.000      125
-URGENCY        1.000     1.000     1.000      186
+micro          0.692     0.444     0.541      144
+BAIT           1.000     0.524     0.688       21
+CLAIM          1.000     0.045     0.087       22
+DRIP           0.542     1.000     0.703       27
+PRICING        1.000     0.172     0.294       29
+SHAMING        0.783     1.000     0.878       19
+URGENCY        0.500     0.038     0.071       26
 == test (strict) ==
 type       precision    recall        f1  support
-micro          0.378     0.519     0.438       27
-CLAIM          0.500     0.556     0.526        9
-PRICING        0.231     0.333     0.273        9
-URGENCY        0.429     0.667     0.522        9
+micro          0.000     0.000     0.000       27
+CLAIM          0.000     0.000     0.000        9
+DRIP           0.000     0.000     0.000        0
+PRICING        0.000     0.000     0.000        9
+URGENCY        0.000     0.000     0.000        9
 == test (lenient) ==
 type       precision    recall        f1  support
-micro          0.811     1.000     0.896       27
-CLAIM          1.000     1.000     1.000        9
-PRICING        0.846     1.000     0.917        9
-URGENCY        0.643     1.000     0.783        9
+micro          0.000     0.000     0.000       27
+CLAIM          0.000     0.000     0.000        9
+DRIP           0.000     0.000     0.000        0
+PRICING        0.000     0.000     0.000        9
+URGENCY        0.000     0.000     0.000        9

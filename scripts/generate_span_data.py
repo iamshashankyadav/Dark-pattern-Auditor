@@ -125,6 +125,36 @@ PRICING = [
     "[[PRICING|After the promo period your rate increases]].",
 ]
 
+SHAMING = [
+    "[[SHAMING|No thanks, I hate saving money and prefer paying full price]].",
+    "[[SHAMING|No, I don't care about my health]], I prefer to stay sick.",
+    "[[SHAMING|I would rather pay more than accept this discount]].",
+    "[[SHAMING|No thanks! I don't like deals, I prefer to stay poor]].",
+    "[[SHAMING|No, I don't want free gifts, I don't deserve them]].",
+    "[[SHAMING|Cancel savings, I'd rather miss out]].",
+    "[[SHAMING|No thanks, I enjoy wasting hard-earned money]].",
+]
+
+DRIP = [
+    "Base fare only: [[DRIP|terminal fee and carrier charges will be added at checkout]].",
+    "Price [[DRIP|excludes mandatory internet handling fee of ${small}0]].",
+    "[[DRIP|Mandatory resort surcharge and cleaning fee are charged at check-in]].",
+    "[[DRIP|Booking fee and payment processing charge will be applied on the final payment page]].",
+    "Displayed rate [[DRIP|does not include unavoidable tourism levy and service charges]].",
+    "[[DRIP|Incremental facility fees and administrative surcharges are added at payment]].",
+    "Base price shown; [[DRIP|mandatory convenience fee is added upon checkout]].",
+]
+
+BAIT = [
+    "Advertised at {pct}% off, but [[BAIT|discount applies only if upgraded to platinum plan]].",
+    "Product image displays genuine leather, [[BAIT|item shipped is synthetic vinyl replica]].",
+    "Special introductory rate of ${small} [[BAIT|valid only with mandatory purchase of deluxe bundle]].",
+    "Featured item out of stock, [[BAIT|replaced with ${price} premium model]].",
+    "Discount voucher [[BAIT|valid only when you switch to our premium tier subscription]].",
+    "[[BAIT|Actual product specifications may vary significantly from the advertised photos]].",
+    "Introductory price [[BAIT|applies only if you buy two additional high-tier accessories]].",
+]
+
 DISEASES = ["diabetes", "arthritis", "anxiety", "insomnia", "acne", "hair loss", "back pain", "migraines"]
 EFFECTS = ["burn belly fat", "regrow hair", "double your energy", "remove wrinkles", "cure fatigue",
            "boost memory", "fix joint pain"]
@@ -169,7 +199,7 @@ def make_document(rng: random.Random) -> dict:
     sentences = [fill(rng.choice(safe_pool), rng) for _ in range(rng.randint(1, 3))]
     n_bad = rng.choices([0, 1, 2, 3], weights=[0.2, 0.45, 0.25, 0.1])[0]
     for _ in range(n_bad):
-        pool = rng.choice([URGENCY, CLAIMS, PRICING, SEED_BAD])
+        pool = rng.choice([URGENCY, CLAIMS, PRICING, SHAMING, DRIP, BAIT, SEED_BAD])
         sentences.append(fill(rng.choice(pool), rng))
     rng.shuffle(sentences)
     return parse_markup(" ".join(sentences))

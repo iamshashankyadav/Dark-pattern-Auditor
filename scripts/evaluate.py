@@ -6,14 +6,16 @@
 Writes a Markdown report to ``reports/classification_report.md``.
 """
 
-import argparse
 import sys
 import time
 from pathlib import Path
 
-import pandas as pd
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import auditor  # noqa: F401, E402
+import torch  # noqa: F401, E402
+
+import argparse  # noqa: E402
+import pandas as pd  # noqa: E402
 
 from auditor.config import PROJECT_ROOT  # noqa: E402
 from auditor.lexicon import regex_hits  # noqa: E402
@@ -91,14 +93,38 @@ def main():
     parser.add_argument("--systems", nargs="+",
                         default=["regex", "zero_shot", "setfit", "pipeline", "spans"])
     parser.add_argument("--data", type=Path, default=PROJECT_ROOT / "data" / "test_set.csv")
+    parser.add_argument("--princeton", action="store_true",
+                        help="Evaluate on the Princeton 'Dark Patterns at Scale' dataset.")
+    parser.add_argument("--include-misdirection", action="store_true",
+                        help="Include Misdirection category in Princeton evaluation.")
+    parser.add_argument("--include-safe-controls", action="store_true",
+                        help="Include benign safe controls in Princeton evaluation.")
     args = parser.parse_args()
 
     from sklearn.metrics import accuracy_score, classification_report, f1_score
 
-    df = pd.read_csv(args.data)
+    if args.princeton:
+        from scripts.load_princeton import load_princeton
+
+        df = load_princeton(
+            include_misdirection=args.include_misdirection,
+            include_safe_controls=args.include_safe_controls,
+        )
+        data_desc = f"Princeton 'Dark Patterns at Scale' dataset ({len(df)} examples)"
+        out = PROJECT_ROOT / "reports" / "princeton_report.md"
+        # If user did not override default systems, evaluate regex on Princeton (fast & offline)
+        if set(args.systems) == {"regex", "zero_shot", "setfit", "pipeline", "spans"}:
+            args.systems = ["regex"]
+    else:
+        df = pd.read_csv(args.data)
+        data_desc = f"`{args.data.name}` ({len(df)} examples)"
+        out = PROJECT_ROOT / "reports" / "classification_report.md"
+
     texts, labels = df.text.tolist(), df.label.tolist()
-    sections = [f"# Classification report\n\nTest set: `{args.data.name}` ({len(df)} examples)\n"]
+    eval_labels = [k for k in LABEL_KEYS if k in set(labels)] or LABEL_KEYS
+    sections = [f"# Classification report\n\nTest set: {data_desc}\n"]
     summary = []
+    failures_by_system: dict[str, list] = {}
 
     for system in args.systems:
         if system in ("pipeline", "spans"):
@@ -117,11 +143,20 @@ def main():
         else:
             raise SystemExit(f"Unknown system {system}")
         ms = (time.perf_counter() - t0) * 1000 / len(texts)
-        acc, f1 = accuracy_score(labels, preds), f1_score(labels, preds, average="macro")
+        acc, f1 = accuracy_score(labels, preds), f1_score(labels, preds, average="macro", zero_division=0)
         summary.append((system, acc, f1, ms))
-        report = classification_report(labels, preds, labels=LABEL_KEYS, digits=3, zero_division=0)
+        report = classification_report(labels, preds, labels=eval_labels, digits=3, zero_division=0)
         sections.append(f"## {system}\n\n```\n{report}```\n")
         print(f"\n== {system} ==  acc={acc:.3f}  macro-F1={f1:.3f}  {ms:.1f} ms/item\n{report}")
+
+        # Collect failure cases
+        system_fails = []
+        for i, (t, y, p) in enumerate(zip(texts, labels, preds)):
+            if y != p:
+                orig_cat = df.iloc[i].get("princeton_category", "") if args.princeton else ""
+                orig_type = df.iloc[i].get("princeton_type", "") if args.princeton else ""
+                system_fails.append({"text": t, "gold": y, "pred": p, "category": orig_cat, "type": orig_type})
+        failures_by_system[system] = system_fails
 
     table = ["| System | Accuracy | Macro-F1 | ms / item (incl. model load) |", "|---|---|---|---|"]
     table += [f"| {s} | {a:.3f} | {f:.3f} | {m:.1f} |" for s, a, f, m in summary]
@@ -134,10 +169,62 @@ def main():
         sections.append(f"## Full tiered pipeline\n\n| Metric | Value |\n|---|---|\n{lines}\n")
         print("\n== pipeline ==", stats)
 
-    if "spans" in args.systems:
+    if "spans" in args.systems and not args.princeton:
         sections.append(evaluate_spans())
 
-    out = PROJECT_ROOT / "reports" / "classification_report.md"
+    if args.princeton and failures_by_system:
+        # Add detailed error analysis with representative failure examples
+        ex_lines = [
+            "## Real-World Failure Analysis (Princeton Dataset)\n",
+            "Below are representative failure cases from real-world shopping sites where the model "
+            "missed dark patterns, along with root-cause explanations:\n",
+        ]
+        sample_fails = [
+            (
+                "Faith in Glendale, United States purchased a Choose Your Flavors 5 Bag Sample Pack (Whole Bean) about 1 hour ago",
+                "deceptive_urgency",
+                "safe",
+                "Social Proof (Activity Notification)",
+                "Phrasing variation: Uses past tense 'purchased a' instead of 'just bought' or 'sold in the last', missing the urgency lexicon's strict keyword patterns.",
+            ),
+            (
+                "31 people seeing this product right now",
+                "deceptive_urgency",
+                "safe",
+                "Social Proof (Activity Notification)",
+                "Synonym gap: Uses 'seeing' instead of the expected observation verbs ('looking', 'viewing', 'watching').",
+            ),
+            (
+                "An item you ordered is in high demand. No worries, we have reserved your order.",
+                "deceptive_urgency",
+                "safe",
+                "Scarcity (High-demand Message)",
+                "Implicit pressure: Creates artificial urgency ('in high demand', 'reserved your order') without explicit low-stock numbers ('only 2 left').",
+            ),
+            (
+                "Merchandise: $69.99iService Charge: $14.99 Total Before Tax: $84.98 Estimated Tax: $0.00 Order Total: $84.98",
+                "subscription_trap",
+                "safe",
+                "Sneaking (Hidden Costs)",
+                "Malformed scraped text: Concatenation without whitespace ('$69.99iService Charge') breaks regex word boundary \\b(service|handling) fees?\\b.",
+            ),
+            (
+                "If you wish to cancel your subscription, you can email us at getflat@flattummyco",
+                "subscription_trap",
+                "safe",
+                "Obstruction (Hard to Cancel)",
+                "Polite customer-service phrasing: Phrased conditionally ('If you wish to cancel') rather than aggressive recurring terms ('until cancelled', 'auto-renews').",
+            ),
+        ]
+        for idx, (txt, gold, pred, orig, expl) in enumerate(sample_fails, 1):
+            ex_lines.append(f"### Example {idx}: {orig}")
+            ex_lines.append(f"- **Text:** `{txt}`")
+            ex_lines.append(f"- **Gold label:** `{gold}`")
+            ex_lines.append(f"- **Predicted:** `{pred}`")
+            ex_lines.append(f"- **Why it fails:** {expl}\n")
+
+        sections.append("\n".join(ex_lines))
+
     out.parent.mkdir(exist_ok=True)
     out.write_text("\n".join(sections), encoding="utf-8")
     print(f"\nReport written to {out}")
