@@ -79,3 +79,63 @@ text,label
 "Hand-stitched leather wallet with six card slots.",safe
 "Sale price valid while the seasonal promotion lasts.",safe
 "Comes with a 1-year manufacturer warranty covering defects.",safe
+"No thanks, I hate saving money and prefer paying full price.",confirm_shaming
+"No, I don't care about my health, I prefer to stay sick.",confirm_shaming
+"I would rather pay more than accept this 50% discount.",confirm_shaming
+"No thanks! I don't like deals, I prefer to stay poor.",confirm_shaming
+"No, I don't want free gifts, I don't deserve them.",confirm_shaming
+"Cancel savings, I'd rather stay out of shape and miss out.",confirm_shaming
+"No thanks, I don't care about the environment or saving energy.",confirm_shaming
+"I don't want to save money today, charge me full retail price.",confirm_shaming
+"No thanks, I enjoy wasting hard-earned money on full-priced items.",confirm_shaming
+"Decline offer: I prefer paying extra for everything.",confirm_shaming
+"No thanks! I prefer paying full price on all future purchases.",confirm_shaming
+"Cancel savings: I do not want discounts on my orders.",confirm_shaming
+"No, I'm not interested in keeping cash in my wallet.",confirm_shaming
+"Skip deal: I'd rather pay full price than get this voucher.",confirm_shaming
+"No thanks, I choose to remain out of shape and ignore fitness.",confirm_shaming
+"Dismiss: I don't care about protecting my home and family.",confirm_shaming
+"No, I prefer paying the maximum possible price for goods.",confirm_shaming
+"No thanks, I hate getting things for free and love high prices.",confirm_shaming
+"I'd rather pay full price than claim my exclusive member coupon.",confirm_shaming
+"No thanks, I don't want to protect my identity online.",confirm_shaming
+"Base fare only: terminal fee and carrier charges will be added at checkout.",drip_pricing
+"Price excludes mandatory internet handling fee of Rs. 99.",drip_pricing
+"Mandatory resort surcharge and cleaning fee are charged at check-in.",drip_pricing
+"Booking fee and payment processing charge will be applied on the final payment page.",drip_pricing
+"Displayed rate does not include unavoidable tourism levy and service charges.",drip_pricing
+"Incremental facility fees and administrative surcharges are added at payment.",drip_pricing
+"Base price shown; mandatory convenience fee is added upon checkout.",drip_pricing
+"Airfare excludes unavoidable fuel surcharges and airport access fees.",drip_pricing
+"Room rate does not include mandatory destination fee of $35 per night.",drip_pricing
+"Price excludes compulsory service fee added during the final step.",drip_pricing
+"A mandatory platform fee will be calculated and added before payment.",drip_pricing
+"Convenience charge and delivery surcharge are applied only at final billing.",drip_pricing
+"Base ticket price does not reflect mandatory venue maintenance charges.",drip_pricing
+"Prices shown exclude obligatory government environmental levy.",drip_pricing
+"An unavoidable payment processing fee will be added to the final receipt.",drip_pricing
+"Ticket price does not include mandatory booking and ticketing fees.",drip_pricing
+"Fare excludes compulsory airport development charge and passenger fee.",drip_pricing
+"Mandatory cleaning surcharge will be added to your total at reservation.",drip_pricing
+"Advertised cost excludes required processing and transmission charges.",drip_pricing
+"Service surcharge not shown upfront and added at final checkout screen.",drip_pricing
+"Advertised at 70% off, but discount applies only if upgraded to platinum plan.",bait_and_switch
+"Product image displays genuine leather, item shipped is synthetic vinyl replica.",bait_and_switch
+"Special introductory rate of $5 valid only with mandatory purchase of deluxe bundle.",bait_and_switch
+"Featured $199 laptop out of stock, replaced with $499 premium model.",bait_and_switch
+"Discount voucher valid only when you switch to our premium tier subscription.",bait_and_switch
+"Actual product specifications may vary significantly from the advertised photos.",bait_and_switch
+"Introductory price applies only if you buy two additional high-tier accessories.",bait_and_switch
+"Free gift offer requires immediate upgrade to full-price corporate membership.",bait_and_switch
+"Advertised deal unavailable in your region, redirected to higher-priced alternative.",bait_and_switch
+"Promotional price requires switching from standard plan to unlimited premium plan.",bait_and_switch
+"Advertised price applies only to refurbished units, new units cost double.",bait_and_switch
+"Sale rate valid only if combined with purchase of expensive insurance policy.",bait_and_switch
+"Product shipped may differ in brand and quality from the advertised gallery.",bait_and_switch
+"Zero down payment offer requires mandatory enrollment in high-interest finance scheme.",bait_and_switch
+"Advertised flight fare applies only if upgraded to flexible comfort bundle.",bait_and_switch
+"Discounted item out of stock; cart automatically updated with higher-tier version.",bait_and_switch
+"50% promotional discount requires switching to an expensive annual commitment.",bait_and_switch
+"Advertised free shipping valid only with purchase of premium add-on coverage.",bait_and_switch
+"Image depicts flagship model, but checkout provides basic low-spec version.",bait_and_switch
+"Advertised rate was a limited promotional slot, currently replaced by standard rate.",bait_and_switch
