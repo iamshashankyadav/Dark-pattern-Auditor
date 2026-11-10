@@ -25,12 +25,25 @@ COLORS = {
     "deceptive_urgency": "rgba(234, 88, 12, 0.30)",
     "unsubstantiated_claims": "rgba(22, 163, 74, 0.30)",
     "subscription_trap": "rgba(37, 99, 235, 0.30)",
+    "confirm_shaming": "rgba(220, 38, 38, 0.30)",
+    "drip_pricing": "rgba(147, 51, 234, 0.30)",
+    "bait_and_switch": "rgba(217, 119, 6, 0.30)",
 }
-SOLID = {"deceptive_urgency": "#ea580c", "unsubstantiated_claims": "#16a34a", "subscription_trap": "#2563eb"}
+SOLID = {
+    "deceptive_urgency": "#ea580c",
+    "unsubstantiated_claims": "#16a34a",
+    "subscription_trap": "#2563eb",
+    "confirm_shaming": "#dc2626",
+    "drip_pricing": "#9333ea",
+    "bait_and_switch": "#d97706",
+}
 SHORT = {
     "deceptive_urgency": "Urgency",
     "unsubstantiated_claims": "Claims",
     "subscription_trap": "Pricing",
+    "confirm_shaming": "Shaming",
+    "drip_pricing": "Drip",
+    "bait_and_switch": "Bait",
     "safe": "Safe",
 }
 
