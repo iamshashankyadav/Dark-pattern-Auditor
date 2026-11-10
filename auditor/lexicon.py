@@ -67,10 +67,56 @@ _PRICING = [
     r"\$\s?\d+(?:\.\d{2})?\s*\*",
 ]
 
+_SHAMING = [
+    r"\bno\s+thanks?\b.{0,30}\b(?:hate|don'?t\s+like|prefer\s+paying|rather\s+pay|pass\s+on|enjoy\s+wasting|choose\s+to\s+remain|don'?t\s+deserve|don'?t\s+want)\b",
+    r"\b(?:no|cancel|decline|skip|dismiss)\b.{0,40}\b(?:full\s+price|not\s+interested\s+in\s+saving|hate\s+(?:discounts?|deals?|money|getting)|stay\s+poor|stay\s+sick|stay\s+out\s+of\s+shape|don'?t\s+want\s+free|don'?t\s+care|prefer\s+paying\s+extra|savings)\b",
+    r"\bi'?d\s+rather\s+pay\s+full\s+price\b",
+    r"\bi\s+(?:don'?t\s+care|prefer\s+to\s+pay\s+full|would\s+rather\s+pay|hate\s+saving|enjoy\s+wasting|choose\s+to\s+remain|prefer\s+paying)\b",
+    r"\bi\s+(?:do\s+not|don'?t)\s+(?:like|want)\s+(?:deals?|discounts?|savings?|free\s+gifts?|healthy|to\s+save)\b",
+    r"\bno\s+thanks?,?\s+i'?ll\s+(?:pay\s+more|risk\s+it)\b",
+    r"\bnot\s+interested\s+in\s+keeping\s+cash\b",
+]
+
+_DRIP = [
+    r"\b(?:drip\s+pricing|incremental\s+fees?)\b",
+    r"\b(?:internet\s+handling|convenience|booking|platform|cleaning|payment\s+processing|resort|destination|venue\s+maintenance)\s+(?:fee|fees|charges?|surcharges?)\b",
+    r"\bbase\s+(?:fare|price|rate|ticket)\b",
+    r"\b(?:carrier|terminal|airport|resort|destination|city|tourism)\s+(?:fee|fees|surcharges?)\b",
+    r"\badditional\s+(?:mandatory|unavoidable|compulsory)\s+(?:fees?|charges?|surcharges?)\b",
+    r"\bprice\s+excludes\s+mandatory\b",
+    r"\bexcluded\s+from\s+the\s+displayed\s+price\b",
+    r"\bhidden\s+(?:markup|surcharges?|incremental\s+cost)\b",
+    r"\b(?:added|calculated|revealed|charged)\s+(?:at\s+checkout|at\s+payment|on\s+the\s+final|at\s+check-in|incrementally)\b",
+    r"\b(?:does\s+not\s+(?:include|reflect)|excludes?)\s+(?:mandatory|compulsory|unavoidable|required)\b",
+    r"\b(?:not\s+shown\s+upfront|not\s+disclosed\s+upfront)\b",
+    r"\bcompulsory\s+(?:service|airport|destination|cleaning)\b",
+    r"\bobligatory\s+government\b",
+    r"\bexcludes?\s+required\s+(?:processing|service)\b",
+]
+
+_BAIT = [
+    r"\bbait\s+and\s+switch\b",
+    r"\badvertised\b.{0,80}\b(?:only\s+with|unavailable|in[- ]store\s+only|requires\s+upgrade|only\s+if\s+upgraded|applies\s+only|out\s+of\s+stock|cost\s+double|refurbished)\b",
+    r"\b(?:introductory|special|promotional|sale)\s+(?:price|rate|discount)\b.{0,60}\b(?:applies\s+only|valid\s+only|requires)\b",
+    r"\b(?:subject\s+to\s+mandatory\s+upgrade|upgrade\s+required|requires\s+immediate\s+upgrade|requires\s+switching)\b",
+    r"\bmodel\s+shown\s+(?:differs|is\s+not|not\s+included)\b",
+    r"\bactual\s+product\s+(?:specifications\s+)?may\s+vary\b|\bproduct\s+shipped\s+may\s+differ\b",
+    r"\b(?:image|photo|picture)\s+(?:displays|shows|depicts)\b.{0,60}\b(?:replica|compressed|synthetic|only|basic)\b",
+    r"\b(?:item|laptop|model|deal)\s+(?:out\s+of\s+stock|unavailable)\b.{0,60}\b(?:replaced|redirected|substituted|cart\s+automatically)\b",
+    r"\boffer\s+valid\s+only\s+(?:if\s+you\s+upgrade|for\s+new\s+contracts|with\s+higher\s+tier|when\s+purchased|with\s+purchase)\b",
+    r"\bdiscount\s+(?:voucher\s+)?(?:applies|valid)\s+only\s+(?:if|when|with)\b",
+    r"\b(?:switch|switching)\s+to\s+(?:an?\s+expensive|a\s+mandatory|our\s+premium|expensive)\b",
+    r"\bzero\s+down\s+payment\s+offer\s+requires\b",
+    r"\breplaced\s+by\s+standard\s+rate\b",
+]
+
 PATTERNS: dict[str, list[re.Pattern]] = {
     "deceptive_urgency": [re.compile(p, re.IGNORECASE) for p in _URGENCY],
     "unsubstantiated_claims": [re.compile(p, re.IGNORECASE) for p in _CLAIMS],
     "subscription_trap": [re.compile(p, re.IGNORECASE) for p in _PRICING],
+    "confirm_shaming": [re.compile(p, re.IGNORECASE) for p in _SHAMING],
+    "drip_pricing": [re.compile(p, re.IGNORECASE) for p in _DRIP],
+    "bait_and_switch": [re.compile(p, re.IGNORECASE) for p in _BAIT],
 }
 
 PHRASE_BANK: dict[str, list[str]] = {
@@ -100,6 +146,27 @@ PHRASE_BANK: dict[str, list[str]] = {
         "difficult cancellation process",
         "recurring billing until you cancel",
         "add-on included in your order by default",
+    ],
+    "confirm_shaming": [
+        "no thanks, I hate saving money and prefer to pay full price",
+        "no, I don't care about my health or saving discounts",
+        "I would rather pay more than accept this offer",
+        "no thanks, I don't want free gifts or exclusive deals",
+        "cancel my savings, I don't like keeping cash in my pocket",
+    ],
+    "drip_pricing": [
+        "mandatory convenience charges and internet handling fees added at checkout",
+        "base price excludes unavoidable resort fees and booking surcharges",
+        "incremental service fees calculated and added on the final payment screen",
+        "carrier charges and taxes not disclosed until payment",
+        "mandatory platform surcharge not included in the displayed rate",
+    ],
+    "bait_and_switch": [
+        "advertised discount only available if you upgrade to the premium tier",
+        "the attractive introductory rate requires an expensive mandatory add-on",
+        "product shown in picture is replaced by a cheaper alternative unless you pay more",
+        "advertised model unavailable, substituted with higher priced edition",
+        "special price only applies when purchased with a costly bundle",
     ],
 }
 
