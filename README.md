@@ -1,5 +1,7 @@
 # E-Commerce Compliance & Dark Pattern Auditor
 
+[![Tests](https://github.com/iamshashankyadav/Dark-pattern-Auditor/actions/workflows/tests.yml/badge.svg)](https://github.com/iamshashankyadav/Dark-pattern-Auditor/actions/workflows/tests.yml)
+
 An NLP pipeline that audits marketplace product copy for manipulative **dark patterns**
 before they turn into regulatory problems (FTC, EU consumer-protection rules). Instead of
 brittle keyword blocklists, it combines sentence embeddings, zero-shot NLI, few-shot
@@ -8,9 +10,12 @@ and *exactly where* in the text.
 
 | Risk category | Example |
 |---|---|
-| Deceptive Urgency (fake countdown timers) | "Hurry, only 2 left! Offer ends in 09:59" |
+| Deceptive Urgency (fake countdown timers, artificial scarcity) | "Hurry, only 2 left! Offer ends in 09:59" |
 | Unsubstantiated Health / Environmental Claims | "Clinically proven to melt belly fat", "zero environmental impact" |
 | Hidden Subscription Traps / Obfuscated Pricing | "Free trial, then $49.99 billed monthly until cancelled" |
+| Confirm-Shaming (CCPA 2023) | "No thanks, I hate saving money and prefer paying full price" |
+| Drip Pricing (CCPA 2023) | "Only $19 today! Mandatory $7 handling fee and $5 service fee added at checkout" |
+| Bait and Switch (CCPA 2023) | "Special promo price $9.99! *Standard $49.99 applied at payment step" |
 | Safe E-Commerce Copy | "Stainless steel bottle, 750 ml, free returns within 30 days" |
 
 Full design: [docs/compliance_auditor_blueprint.md](docs/compliance_auditor_blueprint.md)
@@ -129,6 +134,17 @@ examples, 10 per class, with no overlap with the 80-example training corpus):
 | Zero-shot `bart-large-mnli` (no training) | 0.700 | 0.664 |
 | **SetFit** (`paraphrase-mpnet-base-v2`, 20 examples/class) | **0.950** | **0.950** |
 
+#### CCPA 2023 taxonomy extension: 4-Class vs 7-Class (Before & After)
+
+Extending the taxonomy to India's CCPA guidelines (+3 categories: Confirm-Shaming, Drip Pricing, Bait and Switch; evaluated on 70 examples in `data/test_set.csv`, 10 per class):
+
+| Taxonomy | Classes | Test Examples | Regex Acc / F1 | SetFit Acc / F1 | Key Additions |
+|---|---|---|---|---|---|
+| **Original Baseline** | 4 (Urgency, Claims, Pricing, Safe) | 40 | 0.900 / 0.902 | **0.950 / 0.950** | FTC core categories |
+| **CCPA Extended** | 7 (+ Confirm-Shaming, Drip Pricing, Bait & Switch) | 70 | 0.829 / 0.840 | **0.871 / 0.868** | India CCPA 2023 compliance |
+
+Even with almost double the label space (7 classes vs 4), few-shot SetFit achieves **87.1% accuracy** and **0.868 macro-F1** with only 20 seed examples per class. Full per-class precision and recall metrics are in [reports/classification_report.md](reports/classification_report.md).
+
 **Full tiered pipeline** (Phase 1 → 2 → 3 with routing): 39 of 40 items are decided
 automatically at **97.4 % accuracy** and 1 ambiguous item goes to human review. 7 of the 10
 safe items exit at Phase 1, so they never reach a transformer.
@@ -145,6 +161,19 @@ Strict F1 requires exact phrase boundaries. Lenient F1 counts any same-type over
 what matters for highlighting. The token classifier finds every claim and urgency phrase in the
 test set (recall 1.0). Most remaining strict errors are boundary disagreements, such as
 "timer says 4 minutes left" vs the gold "the timer says 4 minutes left".
+
+### Real-world results (Princeton "Dark Patterns at Scale" dataset)
+
+Evaluated on 1,275 real-world dark-pattern texts crawled from ~11,000 shopping sites ([Mathur et al., 2019](https://github.com/aruneshmathur/dark-patterns-at-scale)) mapped to our taxonomy (see [docs/label_mapping.md](docs/label_mapping.md) and [reports/princeton_report.md](reports/princeton_report.md)):
+
+| System | Accuracy | Deceptive Urgency F1 | Subscription Trap F1 | Speed |
+|---|---|---|---|---|
+| Regex lexicon baseline | 0.636 | 0.777 | 0.779 | 0.1 ms / item |
+
+Key takeaways from real-world shopping copy:
+- **High precision (0.97 - 1.00):** When the regex fires, it is almost always correct.
+- **Recall drop on open-ended phrasing (~64%):** Real sites use long-tail synonyms (e.g. "purchased a" vs "bought", "seeing" vs "viewing", implicit scarcity like "in high demand" without numbers), highlighting why Phase 2 transformer embeddings and few-shot fine-tuning are vital.
+- Detailed failure analysis and 5 representative cases are documented in [reports/princeton_report.md](reports/princeton_report.md).
 
 ### Observations and limitations
 
