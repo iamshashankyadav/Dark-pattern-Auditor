@@ -58,3 +58,33 @@ Get it free today; [[PRICING|recurring charges of $29.95 apply thereafter]].
 [[PRICING|To cancel, mail a written request; online cancellation not available]].
 [[PRICING|Advertised price requires purchase of a separate activation kit]].
 [[PRICING|Membership renews yearly at the then-current rate unless you opt out in writing]].
+[[SHAMING|No thanks, I hate saving money and prefer paying full price]].
+[[SHAMING|No, I don't care about my health]], I prefer to stay sick.
+I would rather pay more than [[SHAMING|accept this 50% discount]].
+[[SHAMING|No thanks! I don't like deals, I prefer to stay poor]].
+[[SHAMING|No, I don't want free gifts, I don't deserve them]].
+Cancel savings, [[SHAMING|I'd rather stay out of shape and miss out]].
+[[SHAMING|No thanks, I don't care about the environment or saving energy]].
+[[SHAMING|I don't want to save money today]], charge me full retail price.
+[[SHAMING|No thanks, I enjoy wasting hard-earned money]] on full-priced items.
+Decline offer: [[SHAMING|I prefer paying extra for everything]].
+Base fare only: [[DRIP|terminal fee and carrier charges will be added at checkout]].
+Price [[DRIP|excludes mandatory internet handling fee of Rs. 99]].
+[[DRIP|Mandatory resort surcharge and cleaning fee are charged at check-in]].
+[[DRIP|Booking fee and payment processing charge will be applied on the final payment page]].
+Displayed rate [[DRIP|does not include unavoidable tourism levy and service charges]].
+[[DRIP|Incremental facility fees and administrative surcharges are added at payment]].
+Base price shown; [[DRIP|mandatory convenience fee is added upon checkout]].
+Airfare [[DRIP|excludes unavoidable fuel surcharges and airport access fees]].
+Room rate [[DRIP|does not include mandatory destination fee of $35 per night]].
+Price [[DRIP|excludes compulsory service fee added during the final step]].
+Advertised at 70% off, but [[BAIT|discount applies only if upgraded to platinum plan]].
+Product image displays genuine leather, [[BAIT|item shipped is synthetic vinyl replica]].
+Special introductory rate of $5 [[BAIT|valid only with mandatory purchase of deluxe bundle]].
+Featured $199 laptop out of stock, [[BAIT|replaced with $499 premium model]].
+Discount voucher [[BAIT|valid only when you switch to our premium tier subscription]].
+[[BAIT|Actual product specifications may vary significantly from the advertised photos]].
+Introductory price [[BAIT|applies only if you buy two additional high-tier accessories]].
+Free gift offer [[BAIT|requires immediate upgrade to full-price corporate membership]].
+Advertised deal unavailable in your region, [[BAIT|redirected to higher-priced alternative]].
+Promotional price [[BAIT|requires switching from standard plan to unlimited premium plan]].
