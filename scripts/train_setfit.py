@@ -11,13 +11,16 @@ counters concept drift.
     python scripts/train_setfit.py [--with-feedback] [--epochs 1]
 """
 
-import argparse
+import os
 import sys
 from pathlib import Path
 
-import pandas as pd
-
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import auditor  # noqa: F401, E402
+import torch  # noqa: F401, E402
+
+import argparse  # noqa: E402
+import pandas as pd  # noqa: E402
 
 from auditor.config import PROJECT_ROOT, get_settings  # noqa: E402
 from auditor.taxonomy import LABEL_KEYS  # noqa: E402
